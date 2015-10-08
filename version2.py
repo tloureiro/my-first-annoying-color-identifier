@@ -41,12 +41,12 @@ def getMainColorFromHistogram(output):
     return maxColor
 
 # initialize the color map (it is going to be used later to reduce the colors present in the picture taken)
-os.system("convert xc:white xc:black xc:yellow xc:orange xc:purple  xc:red xc:blue xc:green -append basic_colors_map.png")
+os.system("convert xc:white xc:black xc:yellow xc:orange xc:red xc:blue xc:green -append basic_colors_map.png")
 
 for i in range(200):
 
     # take picture
-    os.system("fswebcam -d /dev/video0 --jpeg 100%  -S 2 -F 20 --no-banner pic.jpg")
+    os.system("fswebcam -d /dev/video0 --jpeg 85%  -S 2 -F 20 --no-banner -r 300x300 pic.jpg")
 
     # enhance picture's brightness
     os.system("convert pic.jpg -channel rgb -auto-level pic.jpg")
@@ -59,7 +59,7 @@ for i in range(200):
     for i in range(9):
 
         # reduce the colors of the quadrant
-        os.system("convert quadrant-" + str(i) + ".png +dither -colors 16 quadrant-" + str(i) + ".png")
+        os.system("convert quadrant-" + str(i) + ".png +dither -colors 32 quadrant-" + str(i) + ".png")
 
         # now get the main color of this quadrant
         stream = subprocess.check_output(["convert", "quadrant-" + str(i) + ".png", "-scale", "1x1", "-format", "'%[pixel:u]'", "info:-"])
