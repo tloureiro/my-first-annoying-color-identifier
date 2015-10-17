@@ -2,21 +2,22 @@ import os
 import subprocess
 import re
 import sys
-import 
+from colormath.color_objects import sRGBColor, LabColor
+from colormath.color_conversions import convert_color
+from colormath.color_diff import delta_e_cie2000
 
 def getClosestColorNameByRGB(red, green, blue, colorDictionary):
 
-    print str(red)
-    print str(green)
-    print str(blue)
-
     minDistance = sys.maxint
     closestColor = ''
+    color = sRGBColor(red, green, blue)
+    lab1 = convert_color(color, LabColor)
 
     for colorName in colorDictionary:
-        distance = ((red - colorDictionary[colorName][0]) )**2 + ((green - colorDictionary[colorName][1]) )**2 + ((blue - colorDictionary[colorName][2]) )**2
 
-        print str(distance) + " " + colorName
+        dictionaryColor = sRGBColor(colorDictionary[colorName][0], colorDictionary[colorName][1], colorDictionary[colorName][2])
+        lab2 = convert_color(dictionaryColor, LabColor)
+        distance = delta_e_cie2000(lab1, lab2)
         if distance < minDistance:
             minDistance = distance
             closestColor = colorName
@@ -60,7 +61,7 @@ for i in range(200):
     for i in range(9):
 
         # reduce the colors of the quadrant
-        os.system("convert quadrant-" + str(i) + ".png +dither -colors 16 quadrant-" + str(i) + ".png")
+        os.system("convert quadrant-" + str(i) + ".png +dither -colors 8 quadrant-" + str(i) + ".png")
 
         # now get the main color of this quadrant
         stream = subprocess.check_output(["convert", "quadrant-" + str(i) + ".png", "-format", "%c", "histogram:info:-"])
